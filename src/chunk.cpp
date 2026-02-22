@@ -1,23 +1,23 @@
 #include "chunk.hpp"
 #include <cstdio>
 
-void writeChunk(Chunk& chunk, OpCode byte, int line)
+void Chunk::writeChunk(OpCode opcode, int line)
 {
-    writeChunk(chunk, static_cast<std::uint8_t>(byte), line);
+    writeChunk(static_cast<std::uint8_t>(opcode), line);
 }
 
-void writeChunk(Chunk& chunk, std::uint8_t byte, int line)  // NOLINT
+void Chunk::writeChunk(std::uint8_t byte, int line)  // NOLINT
 {
-    chunk.code.push_back(byte);
+    code.push_back(byte);
     std::size_t lineE {static_cast<std::size_t>(line)};
 
     // run-length encoding
-    if (!chunk.lines.empty() && chunk.lines[chunk.lines.size() - 2] == lineE) {
-        ++chunk.lines[chunk.lines.size() - 1]; 
+    if (!lines.empty() && lines[lines.size() - 2] == lineE) {
+        ++lines[lines.size() - 1]; 
     }
     else 
     { 
-        chunk.lines.push_back(lineE);
-        chunk.lines.push_back(1);
+        lines.push_back(lineE);
+        lines.push_back(1);
     }
 }

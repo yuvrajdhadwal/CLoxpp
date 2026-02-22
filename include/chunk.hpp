@@ -25,24 +25,28 @@ class Chunk
     Chunk() = default;
 
     // chunk.cpp
-    friend void writeChunk(Chunk& chunk, OpCode byte, int line);
-    friend void writeChunk(Chunk& chunk, std::uint8_t byte, int line);
-    friend void writeConstant(Chunk& chunk, Value value, int line);
+    void writeChunk(OpCode opcode, int line);
+    void writeChunk(std::uint8_t byte, int line);
+    void writeConstant(Value value, int line);
 
     // debug.cpp
-    friend void disassembleChunk(Chunk& chunk, std::string_view name);
-    friend auto disassembleInstruction(Chunk& chunk, std::size_t offset) -> std::size_t;
-    friend auto getLine(Chunk& chunk, std::size_t instrIndex) -> std::size_t;
+    void disassembleChunk(std::string_view name);
 
     // value.cpp
-    friend void writeValue(std::vector<Value> array, Value value);
-    friend auto addConstant(Chunk& chunk, Value value) -> std::uint8_t;
+    auto addConstant(Value value) -> std::uint8_t;
 
     // inline
     [[nodiscard]] auto getCode(std::size_t index) const -> uint8_t { return code[index]; }
     [[nodiscard]] auto getConstant(std::size_t index) const -> Value { return constants[index]; }
 
     private:
+    // debug.cpp
+    auto disassembleInstruction(std::size_t offset) -> std::size_t;
+    auto getLine(std::size_t instrIndex) -> std::size_t;
+
+    // value.cpp
+    void writeValue(Value value);
+
     std::vector<uint8_t> code;
     std::vector<Value> constants;
     std::vector<std::size_t> lines;

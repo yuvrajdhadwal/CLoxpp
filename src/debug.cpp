@@ -27,8 +27,8 @@ static auto constantLongInstruction(const char* name, const Chunk& chunk, std::s
     const std::uint8_t constantIndex1 {chunk.getCode(offset + 1)};
     const std::uint8_t constantIndex2 {chunk.getCode(offset + 2)};  
     const std::uint8_t constantIndex3 {chunk.getCode(offset + 3)};  
-    const std::size_t constantIndex {static_cast<size_t>((constantIndex1 << 8ULL) 
-        | (constantIndex2 << 4ULL) | constantIndex3)};
+    const std::size_t constantIndex {static_cast<size_t>((constantIndex1 << 16ULL) 
+        | (constantIndex2 << 8ULL) | constantIndex3)};
     
     printf("%-16s %4d '", name, static_cast<int>(constantIndex));  // NOLINT
     
@@ -37,34 +37,34 @@ static auto constantLongInstruction(const char* name, const Chunk& chunk, std::s
     return offset + 4;
 }
 
-void disassembleChunk(Chunk& chunk, const std::string_view name)
+void Chunk::disassembleChunk(const std::string_view name)
 {
     std::cout << "== " << name << " ==\n";
 
-    for (std::size_t offset {0}; offset < chunk.code.size();)
+    for (std::size_t offset {0}; offset < code.size();)
     {
-        offset = disassembleInstruction(chunk, offset);
+        offset = disassembleInstruction(offset);
     }
 }
 
-auto disassembleInstruction(Chunk& chunk, std::size_t offset) -> std::size_t
+auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t
 {
     printf("%04d ", static_cast<int>(offset));  // NOLINT
 
-    if (offset > 0 && chunk.lines[offset]  == chunk.lines[offset - 1])
+    if (offset > 0 && lines[offset]  == lines[offset - 1])
     {
         std::cout << "   | ";
     } else { printf("%4d ",  // NOLINT
-        static_cast<int>(getLine(chunk, offset))); }  
+        static_cast<int>(getLine(offset))); }  
 
-    OpCode instruction {chunk.code[offset]};
+    OpCode instruction {code[offset]};
 
     switch (instruction)
     {
         case OpCode::OP_CONSTANT:
-            return constantInstruction("OP_CONSTANT", chunk, offset);
+            return constantInstruction("OP_CONSTANT", *this, offset);
         case OpCode::OP_CONSTANT_LONG:
-            return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
+            return constantLongInstruction("OP_CONSTANT_LONG", *this, offset);
         case OpCode::OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:
@@ -73,16 +73,16 @@ auto disassembleInstruction(Chunk& chunk, std::size_t offset) -> std::size_t
     }
 }
 
-auto getLine(Chunk& chunk, std::size_t instrIndex) -> std::size_t
+auto Chunk::getLine(std::size_t instrIndex) -> std::size_t
 {
     std::size_t currInstrIndex {0};
     std::size_t currLineIndex {0};
 
-    while (currInstrIndex + chunk.lines[currLineIndex + 1] <= instrIndex)
+    while (currInstrIndex + lines[currLineIndex + 1] <= instrIndex)
     {
-        currInstrIndex += chunk.lines[currLineIndex + 1];
+        currInstrIndex += lines[currLineIndex + 1];
         currLineIndex += 2;
     }
 
-    return chunk.lines[currLineIndex];
+    return lines[currLineIndex];
 }
