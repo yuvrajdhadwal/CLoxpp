@@ -1,4 +1,6 @@
 #include "chunk.hpp"
+#include <algorithm>
+#include <cstddef>
 
 void printValue(Value value);
 
@@ -51,7 +53,7 @@ auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t
 {
     printf("%04d ", static_cast<int>(offset));  // NOLINT
 
-    if (offset > 0 && lines[offset]  == lines[offset - 1])
+    if (offset > 0 && getLine(offset)  == getLine(offset - 1))
     {
         std::cout << "   | ";
     } else { printf("%4d ",  // NOLINT
@@ -75,14 +77,11 @@ auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t
 
 auto Chunk::getLine(std::size_t instrIndex) -> std::size_t
 {
-    std::size_t currInstrIndex {0};
-    std::size_t currLineIndex {0};
-
-    while (currInstrIndex + lines[currLineIndex + 1] <= instrIndex)
-    {
-        currInstrIndex += lines[currLineIndex + 1];
-        currLineIndex += 2;
-    }
-
-    return lines[currLineIndex];
+    auto iter = std::upper_bound(lines.begin(), lines.end(), instrIndex,  // NOLINT
+        [](std::size_t index, const LineEntry& entry) -> bool
+        {
+            return index < entry.endOffset;
+        });
+    
+    return (iter != lines.end()) ? static_cast<std::size_t>(iter->line) : 0;
 }

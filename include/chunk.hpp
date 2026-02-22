@@ -19,6 +19,11 @@ enum class OpCode : std::uint8_t
     OP_RETURN
 };
 
+struct LineEntry {
+    std::size_t endOffset;
+    int line;
+};
+
 class Chunk
 {
     public:
@@ -49,5 +54,5 @@ class Chunk
 
     std::vector<uint8_t> code;
     std::vector<Value> constants;
-    std::vector<std::size_t> lines;
+    std::vector<LineEntry> lines;
 };
