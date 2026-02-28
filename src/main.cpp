@@ -1,10 +1,13 @@
 #include "common.hpp"
 #include "chunk.hpp"
+#include "vm.hpp"
+
 #include <cstdint>
 
 // int argc, char* argv[]
 auto main() -> int
 {
+    VirtualMachine virtm{};
     Chunk chunk{};
 
     chunk.writeChunk(OpCode::OP_RETURN, 1);
@@ -26,6 +29,7 @@ auto main() -> int
     chunk.writeConstant(25, 99);  // NOLINT
     
     chunk.disassembleChunk("test chunk");
+    virtm.interpret(chunk);
 
     return 0;
 }
