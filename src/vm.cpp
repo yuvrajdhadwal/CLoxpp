@@ -2,9 +2,9 @@
 #include "vm.hpp"
 
 auto VirtualMachine::interpret(Chunk& chunk) -> InterpretResult {
-    m_chunk = std::make_unique<Chunk>(chunk);
-    m_ip = m_chunk->getCodeIter();
-    m_stack.reserve(MAX_STACK);
+    m_chunk = &chunk;
+    m_ip = m_chunk->getFirstCode();
+    m_stackTop = m_stack.data();
 
     return run();
 }
@@ -20,35 +20,36 @@ auto VirtualMachine::run() -> InterpretResult {
         }
         std::cout << '\n';
         m_chunk->disassembleInstruction(
-            static_cast<std::size_t>(std::distance(m_chunk->getCodeIter(), m_ip)));
+                static_cast<std::size_t>(m_ip - m_chunk->getFirstCode()));
 #endif
         OpCode instruction{};
 
         switch (instruction = read_byte()) {
             case OpCode::OP_CONSTANT:
-                m_stack.push_back(read_constant());
+                *m_stackTop = read_constant();
+                ++m_stackTop;
                 break;
             case OpCode::OP_CONSTANT_LONG:
-                m_stack.push_back(read_long_constant());
+                *m_stackTop = read_long_constant();
+                ++m_stackTop;
                 break;
             case OpCode::OP_NEGATE:
-                m_stack[m_stack.size() - 1] *= -1;
+                *(m_stackTop - 1) *= -1.0;
                 break;
             case OpCode::OP_ADD:
-                binary_op('+');
+                binary_op<std::plus<Value>>();
                 break;
             case OpCode::OP_SUBTRACT:
-                binary_op('-');
+                binary_op<std::minus<Value>>();
                 break;
             case OpCode::OP_MULTIPLY:
-                binary_op('*');
+                binary_op<std::multiplies<Value>>();
                 break;
             case OpCode::OP_DIVIDE:
-                binary_op('/');
+                binary_op<std::divides<Value>>();
                 break;
             case OpCode::OP_RETURN:
-                printValue(m_stack.back());
-                m_stack.pop_back();
+                printValue(*(--m_stackTop));
                 std::cout << '\n';
                 return InterpretResult::INTERPRET_OK;
             default:
@@ -59,25 +60,11 @@ auto VirtualMachine::run() -> InterpretResult {
     }
 }
 
-void VirtualMachine::binary_op(char oper) {
-    Value second = m_stack.back();
-    m_stack.pop_back();
-    Value first = m_stack.back();
-    m_stack.pop_back();
-    switch (oper) {
-        case '+':
-            m_stack.push_back(first + second);
-            break;
-        case '-':
-            m_stack.push_back(first - second);
-            break;
-        case '*':
-            m_stack.push_back(first * second);
-            break;
-        case '/':
-            m_stack.push_back(first / second);
-            break;
-        default:
-            return;
-    }
+template<typename Oper>
+void VirtualMachine::binary_op() {
+    Value second = *(--m_stackTop);
+    Value first = *(--m_stackTop);
+    Oper oper;
+    *m_stackTop = oper(first, second);
+    ++m_stackTop;
 }

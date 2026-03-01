@@ -35,7 +35,7 @@ static auto constantLongInstruction(const char* name, const Chunk& chunk, std::s
     return offset + 4;
 }
 
-void Chunk::disassembleChunk(const std::string_view name) {
+void Chunk::disassembleChunk(const std::string_view name) const {
     std::cout << "== " << name << " ==\n";
 
     for (std::size_t offset{0}; offset < code.size();) {
@@ -43,7 +43,7 @@ void Chunk::disassembleChunk(const std::string_view name) {
     }
 }
 
-auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t {
+auto Chunk::disassembleInstruction(std::size_t offset) const -> std::size_t {
     printf("%04d ", static_cast<int>(offset));  // NOLINT
 
     if (offset > 0 && getLine(offset) == getLine(offset - 1)) {
@@ -78,7 +78,7 @@ auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t {
     }
 }
 
-auto Chunk::getLine(std::size_t instrIndex) -> std::size_t {
+auto Chunk::getLine(std::size_t instrIndex) const -> std::size_t {
     auto iter = std::upper_bound(
         lines.begin(), lines.end(), instrIndex,  // NOLINT
         [](std::size_t index, const LineEntry& entry) -> bool { return index < entry.endOffset; });

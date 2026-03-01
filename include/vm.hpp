@@ -1,8 +1,10 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <iostream>
 #include <iterator>
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -22,7 +24,9 @@ class VirtualMachine {
 
    private:
     auto run() -> InterpretResult;
-    void binary_op(char oper);
+
+    template<typename Oper>
+    void binary_op();
 
     auto read_byte() -> OpCode { return static_cast<OpCode>(*m_ip++); }
     auto read_constant() -> Value {
@@ -38,7 +42,8 @@ class VirtualMachine {
         return m_chunk->getConstant(constantIndex);
     }
 
-    std::unique_ptr<Chunk> m_chunk;
-    std::vector<uint8_t>::iterator m_ip;
-    std::vector<Value> m_stack;
+    const Chunk* m_chunk;
+    const uint8_t* m_ip;
+    std::array<Value, MAX_STACK> m_stack;
+    Value* m_stackTop;
 };
