@@ -13,9 +13,9 @@ auto VirtualMachine::run() -> InterpretResult {
     for (;;) {
 #ifdef DEBUG_TRACE_EXEC
         std::cout << "        ";
-        for (const auto& value : m_stack) {
+        for (Value* i {m_stack.data()}; i < m_stackTop; ++i) {
             std::cout << "[ ";
-            printValue(value);
+            printValue(*i);
             std::cout << " ]";
         }
         std::cout << '\n';
@@ -62,9 +62,7 @@ auto VirtualMachine::run() -> InterpretResult {
 
 template<typename Oper>
 void VirtualMachine::binary_op() {
-    Value second = *(--m_stackTop);
-    Value first = *(--m_stackTop);
     Oper oper;
-    *m_stackTop = oper(first, second);
-    ++m_stackTop;
+    *(m_stackTop - 2) = oper(*(m_stackTop - 2), *(m_stackTop - 1));
+    --m_stackTop;
 }
