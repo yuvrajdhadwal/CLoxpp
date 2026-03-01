@@ -1,72 +1,75 @@
-#include "chunk.hpp"
 #include <algorithm>
 #include <cstddef>
 
-void printValue(Value value);
+#include "chunk.hpp"
 
-static auto simpleInstruction(const std::string_view name, std::size_t offset) -> std::size_t
-{
+static auto simpleInstruction(const std::string_view name, std::size_t offset) -> std::size_t {
     std::cout << name << '\n';
     return offset + 1;
 }
 
-static auto constantInstruction(const char* name, const Chunk& chunk, std::size_t offset) 
-    -> std::size_t
-{
+static auto constantInstruction(const char* name, const Chunk& chunk, std::size_t offset)
+    -> std::size_t {
     // gets the index of constant in the constants vector
-    const std::uint8_t constantIndex {chunk.getCode(offset + 1)};  
+    const std::uint8_t constantIndex{chunk.getCode(offset + 1)};
     printf("%-16s %4d '", name, constantIndex);  // NOLINT
-    
+
     printValue(chunk.getConstant(constantIndex));
     std::cout << '\n';
     return offset + 2;
 }
 
 static auto constantLongInstruction(const char* name, const Chunk& chunk, std::size_t offset)
-    -> std::size_t
-{
+    -> std::size_t {
     // gets the index of constant in the constants vector
-    const std::uint8_t constantIndex1 {chunk.getCode(offset + 1)};
-    const std::uint8_t constantIndex2 {chunk.getCode(offset + 2)};  
-    const std::uint8_t constantIndex3 {chunk.getCode(offset + 3)};  
-    const std::size_t constantIndex {static_cast<size_t>((constantIndex1 << 16ULL) 
-        | (constantIndex2 << 8ULL) | constantIndex3)};
-    
+    const std::uint8_t constantIndex1{chunk.getCode(offset + 1)};
+    const std::uint8_t constantIndex2{chunk.getCode(offset + 2)};
+    const std::uint8_t constantIndex3{chunk.getCode(offset + 3)};
+    const std::size_t constantIndex{
+        static_cast<size_t>((constantIndex1 << 16ULL) | (constantIndex2 << 8ULL) | constantIndex3)};
+
     printf("%-16s %4d '", name, static_cast<int>(constantIndex));  // NOLINT
-    
+
     printValue(chunk.getConstant(constantIndex));
     std::cout << '\n';
     return offset + 4;
 }
 
-void Chunk::disassembleChunk(const std::string_view name)
-{
+void Chunk::disassembleChunk(const std::string_view name) {
     std::cout << "== " << name << " ==\n";
 
-    for (std::size_t offset {0}; offset < code.size();)
-    {
+    for (std::size_t offset{0}; offset < code.size();) {
         offset = disassembleInstruction(offset);
     }
 }
 
-auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t
-{
+auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t {
     printf("%04d ", static_cast<int>(offset));  // NOLINT
 
-    if (offset > 0 && getLine(offset)  == getLine(offset - 1))
-    {
+    if (offset > 0 && getLine(offset) == getLine(offset - 1)) {
         std::cout << "   | ";
-    } else { printf("%4d ",  // NOLINT
-        static_cast<int>(getLine(offset))); }  
+    } else {
+        printf("%4d ",  // NOLINT
+               static_cast<int>(getLine(offset)));
+    }
 
-    OpCode instruction {code[offset]};
+    OpCode instruction{code[offset]};
 
-    switch (instruction)
-    {
+    switch (instruction) {
         case OpCode::OP_CONSTANT:
             return constantInstruction("OP_CONSTANT", *this, offset);
         case OpCode::OP_CONSTANT_LONG:
             return constantLongInstruction("OP_CONSTANT_LONG", *this, offset);
+        case OpCode::OP_NEGATE:
+            return simpleInstruction("OP_NEGATE", offset);
+        case OpCode::OP_ADD:
+            return simpleInstruction("OP_ADD", offset);
+        case OpCode::OP_SUBTRACT:
+            return simpleInstruction("OP_SUBTRACT", offset);
+        case OpCode::OP_MULTIPLY:
+            return simpleInstruction("OP_MULTIPLY", offset);
+        case OpCode::OP_DIVIDE:
+            return simpleInstruction("OP_DIVIDE", offset);
         case OpCode::OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:
@@ -75,13 +78,10 @@ auto Chunk::disassembleInstruction(std::size_t offset) -> std::size_t
     }
 }
 
-auto Chunk::getLine(std::size_t instrIndex) -> std::size_t
-{
-    auto iter = std::upper_bound(lines.begin(), lines.end(), instrIndex,  // NOLINT
-        [](std::size_t index, const LineEntry& entry) -> bool
-        {
-            return index < entry.endOffset;
-        });
-    
+auto Chunk::getLine(std::size_t instrIndex) -> std::size_t {
+    auto iter = std::upper_bound(
+        lines.begin(), lines.end(), instrIndex,  // NOLINT
+        [](std::size_t index, const LineEntry& entry) -> bool { return index < entry.endOffset; });
+
     return (iter != lines.end()) ? static_cast<std::size_t>(iter->line) : 0;
 }

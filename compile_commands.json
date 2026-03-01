@@ -18,5 +18,10 @@
   "directory": "/home/ydhadwal/CLoxpp/build",
   "command": "/usr/bin/c++  -I/home/ydhadwal/CLoxpp/include -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wsign-conversion -std=gnu++23 -o CMakeFiles/CLoxpp.exe.dir/src/value.cpp.o -c /home/ydhadwal/CLoxpp/src/value.cpp",
   "file": "/home/ydhadwal/CLoxpp/src/value.cpp"
+},
+{
+  "directory": "/home/ydhadwal/CLoxpp/build",
+  "command": "/usr/bin/c++  -I/home/ydhadwal/CLoxpp/include -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wsign-conversion -std=gnu++23 -o CMakeFiles/CLoxpp.exe.dir/src/vm.cpp.o -c /home/ydhadwal/CLoxpp/src/vm.cpp",
+  "file": "/home/ydhadwal/CLoxpp/src/vm.cpp"
 }
 ]

@@ -1,21 +1,25 @@
 #pragma once
 
-#include "common.hpp"
-
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string_view>
 #include <vector>
 
+#include "common.hpp"
+
 using Value = double;
 
-enum class OpCode : std::uint8_t
-{
+enum class OpCode : std::uint8_t {
     OP_CONSTANT,
     OP_CONSTANT_LONG,
+    OP_NEGATE,
+    OP_ADD,
+    OP_SUBTRACT,
+    OP_MULTIPLY,
+    OP_DIVIDE,
     OP_RETURN
 };
 
@@ -24,9 +28,10 @@ struct LineEntry {
     int line;
 };
 
-class Chunk
-{
-    public:
+void printValue(Value value);
+
+class Chunk {
+   public:
     Chunk() = default;
 
     // chunk.cpp
@@ -36,6 +41,7 @@ class Chunk
 
     // debug.cpp
     void disassembleChunk(std::string_view name);
+    auto disassembleInstruction(std::size_t offset) -> std::size_t;
 
     // value.cpp
     auto addConstant(Value value) -> std::uint8_t;
@@ -43,10 +49,10 @@ class Chunk
     // inline
     [[nodiscard]] auto getCode(std::size_t index) const -> uint8_t { return code[index]; }
     [[nodiscard]] auto getConstant(std::size_t index) const -> Value { return constants[index]; }
+    [[nodiscard]] auto getCodeIter() -> std::vector<uint8_t>::iterator { return code.begin(); }
 
-    private:
+   private:
     // debug.cpp
-    auto disassembleInstruction(std::size_t offset) -> std::size_t;
     auto getLine(std::size_t instrIndex) -> std::size_t;
 
     // value.cpp

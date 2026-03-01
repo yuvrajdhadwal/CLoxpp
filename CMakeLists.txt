@@ -14,6 +14,7 @@ add_executable(CLoxpp.exe
     src/chunk.cpp
     src/debug.cpp
     src/value.cpp
+    src/vm.cpp
 )
 
 target_include_directories(CLoxpp.exe PRIVATE
