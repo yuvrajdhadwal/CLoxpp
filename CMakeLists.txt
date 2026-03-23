@@ -10,9 +10,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # for clangd
 set(CMAKE_BUILD_TYPE DEBUG)
 
 add_executable(CLoxpp.exe 
-    src/main.cpp
     src/chunk.cpp
+    src/compiler.cpp
     src/debug.cpp
+    src/main.cpp
+    src/scanner.cpp
+    src/token.cpp
     src/value.cpp
     src/vm.cpp
 )

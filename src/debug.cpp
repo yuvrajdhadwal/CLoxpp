@@ -79,8 +79,8 @@ auto Chunk::disassembleInstruction(std::size_t offset) const -> std::size_t {
 }
 
 auto Chunk::getLine(std::size_t instrIndex) const -> std::size_t {
-    auto iter = std::upper_bound(
-        lines.begin(), lines.end(), instrIndex,  // NOLINT
+    auto iter = std::upper_bound(  // NOLINT
+        lines.begin(), lines.end(), instrIndex,
         [](std::size_t index, const LineEntry& entry) -> bool { return index < entry.endOffset; });
 
     return (iter != lines.end()) ? static_cast<std::size_t>(iter->line) : 0;

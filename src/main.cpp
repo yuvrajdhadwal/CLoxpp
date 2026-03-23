@@ -2,48 +2,68 @@
 #include "chunk.hpp"
 #include "vm.hpp"
 
-#include <cstdint>
+#include <string>
+#include <string_view>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
-// int argc, char* argv[]
-auto main() -> int
+enum class ErrorCodes : uint8_t
+{
+    FILE_ERROR = 74,
+    FILE_PATH_ERROR = 64,
+    COMPILE_ERROR = 65,
+    RUNTIME_ERROR = 70,
+};
+
+static void repl(VirtualMachine& virtm)
+{
+    std::string line;
+    std::cin >> line;
+    virtm.interpret(line);
+}
+
+static auto readFile(std::string_view path) -> std::string
+{
+    std::ifstream file (static_cast<std::string>(path));
+
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open file \"" << path << "\".\n";
+        exit(static_cast<int>(ErrorCodes::FILE_ERROR));
+    }
+
+    std::ostringstream oss;
+    oss << file.rdbuf();
+    std::string output = oss.str();
+
+    return output;
+}
+
+static void runFile(std::string_view path, VirtualMachine& virtm)
+{
+    std::string source = readFile(path);
+    InterpretResult result = virtm.interpret(source);
+
+    if (result == InterpretResult::INTERPRET_COMPILE_ERROR) { exit(static_cast<int>(ErrorCodes::COMPILE_ERROR)); }
+    if (result == InterpretResult::INTERPRET_RUNTIME_ERROR) { exit(static_cast<int>(ErrorCodes::RUNTIME_ERROR)); }
+}
+
+auto main(int argc, const char* argv[]) -> int
 {
     VirtualMachine virtm{};
-    Chunk chunk{};
 
-    std::uint8_t constant {chunk.addConstant(1.2)};  // NOLINT
-    chunk.writeChunk(OpCode::OP_CONSTANT, 4);
-    chunk.writeChunk(constant, 4);
-
-//    constant = chunk.addConstant(3.4);
-//    chunk.writeChunk(OpCode::OP_CONSTANT, 4);
-//    chunk.writeChunk(constant, 4);
-    chunk.writeConstant(3.4, 4);
-
-    chunk.writeChunk(OpCode::OP_ADD, 4);
-
-//    constant = chunk.addConstant(5.6);
-//    chunk.writeChunk(OpCode::OP_CONSTANT, 4);
-//    chunk.writeChunk(constant, 4);
-    chunk.writeConstant(5.6, 4);
-    
-    chunk.writeChunk(OpCode::OP_DIVIDE, 4);
-
-    chunk.writeChunk(OpCode::OP_NEGATE, 4);
-    chunk.writeChunk(OpCode::OP_RETURN, 4);
-
-    chunk.writeChunk(OpCode::OP_RETURN, 1);
-    chunk.writeChunk(OpCode::OP_RETURN, 1);
-    chunk.writeChunk(OpCode::OP_RETURN, 1);
-    chunk.writeChunk(OpCode::OP_RETURN, 2);
-    chunk.writeChunk(OpCode::OP_RETURN, 3);
-    chunk.writeChunk(OpCode::OP_RETURN, 3);
-    chunk.writeConstant(15, 8);  // NOLINT
-    chunk.writeConstant(12, 9);  // NOLINT
-    chunk.writeConstant(11, 15);  // NOLINT
-    chunk.writeConstant(25, 99);  // NOLINT
-    
-    chunk.disassembleChunk("test chunk");
-    virtm.interpret(chunk);
+    if (argc == 1)
+    {
+        repl(virtm);
+    } else if (argc == 2)
+    {
+        runFile(argv[1], virtm);  // NOLINT
+    } else 
+{
+        std::cerr << "Usage: Clox [path]\n";
+        exit(static_cast<int>(ErrorCodes::FILE_PATH_ERROR));
+    }
 
     return 0;
 }

@@ -2,13 +2,14 @@
 
 #include <array>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <iterator>
-#include <functional>
 #include <memory>
 #include <vector>
 
 #include "chunk.hpp"
+#include "compiler.hpp"
 
 enum class InterpretResult : uint8_t {
     INTERPRET_OK,
@@ -20,15 +21,15 @@ const std::size_t MAX_STACK{256};
 
 class VirtualMachine {
    public:
-    auto interpret(Chunk& chunk) -> InterpretResult;
+    auto interpret(std::string_view source) -> InterpretResult;
 
    private:
     auto run() -> InterpretResult;
 
-    template<typename Oper>
+    template <typename Oper>
     void binary_op();
 
-    auto read_byte() -> OpCode { return static_cast<OpCode>(*m_ip++); }
+    auto read_byte() -> OpCode { return static_cast<OpCode>(*m_ip++); }  // NOLINT
     auto read_constant() -> Value {
         return m_chunk->getConstant(static_cast<std::size_t>(read_byte()));
     }

@@ -1,12 +1,9 @@
-#include "common.hpp"
 #include "vm.hpp"
 
-auto VirtualMachine::interpret(Chunk& chunk) -> InterpretResult {
-    m_chunk = &chunk;
-    m_ip = m_chunk->getFirstCode();
-    m_stackTop = m_stack.data();
+auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {
+    compile(source);
 
-    return run();
+    return InterpretResult::INTERPRET_OK;
 }
 
 auto VirtualMachine::run() -> InterpretResult {
