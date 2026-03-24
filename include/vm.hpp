@@ -23,6 +23,7 @@ const std::size_t MAX_STACK{256};
 class VirtualMachine {
    public:
     auto interpret(std::string_view source) -> InterpretResult;
+    VirtualMachine();
 
    private:
     auto run() -> InterpretResult;
@@ -31,11 +32,11 @@ class VirtualMachine {
     void binary_op();
 
     auto read_byte() -> OpCode {
-        assert(m_ip < m_chunk->getCodeSize());
-        return static_cast<OpCode>(m_chunk->getCode(m_ip++));
+        assert(m_ip < m_chunk.getCodeSize());
+        return static_cast<OpCode>(m_chunk.getCode(m_ip++));
     }
     auto read_constant() -> Value {
-        return m_chunk->getConstant(static_cast<std::size_t>(read_byte()));
+        return m_chunk.getConstant(static_cast<std::size_t>(read_byte()));
     }
     auto read_long_constant() -> Value {
         const std::uint8_t constantIndex1{static_cast<std::uint8_t>(read_byte())};
@@ -44,7 +45,7 @@ class VirtualMachine {
         const std::size_t constantIndex{static_cast<size_t>(
             (constantIndex1 << 16ULL) | (constantIndex2 << 8ULL) | constantIndex3)};
 
-        return m_chunk->getConstant(constantIndex);
+        return m_chunk.getConstant(constantIndex);
     }
 
     void push(Value value) {
@@ -59,7 +60,7 @@ class VirtualMachine {
         return *m_stackTop;
     }
 
-    const Chunk* m_chunk;
+    Chunk m_chunk;
     std::size_t m_ip;
     std::array<Value, MAX_STACK> m_stack;
     Value* m_stackTop;

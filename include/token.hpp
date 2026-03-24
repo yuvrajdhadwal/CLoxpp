@@ -6,6 +6,7 @@
 
 class Token {
    public:
+    Token();
     Token(TokenType type, std::size_t start, std::size_t length, std::size_t line);
     Token(TokenType type, std::string_view message, std::size_t line);
 

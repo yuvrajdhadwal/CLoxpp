@@ -1,9 +1,21 @@
 #include "vm.hpp"
 
-auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {  // NOLINT
-    compile(source);
+VirtualMachine::VirtualMachine() : m_ip {0}, m_stack {}, m_stackTop {m_stack.data()} {}
 
-    return InterpretResult::INTERPRET_OK;
+auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {  // NOLINT
+    Chunk chunk{};
+
+    Compiler compiler {source, chunk};
+
+    if (!compiler.isOK())
+    {
+        return InterpretResult::INTERPRET_COMPILE_ERROR;
+    }
+
+    m_chunk = std::move(chunk);
+    m_ip = 0;
+
+    return run();
 }
 
 auto VirtualMachine::run() -> InterpretResult {
@@ -16,7 +28,7 @@ auto VirtualMachine::run() -> InterpretResult {
             std::cout << " ]";
         }
         std::cout << '\n';
-        m_chunk->disassembleInstruction(m_ip);
+        m_chunk.disassembleInstruction(m_ip);
 #endif
         OpCode instruction{};
 
