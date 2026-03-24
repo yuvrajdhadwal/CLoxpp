@@ -10,27 +10,25 @@ auto VirtualMachine::run() -> InterpretResult {
     for (;;) {
 #ifdef DEBUG_TRACE_EXEC
         std::cout << "        ";
-        for (Value* i {m_stack.data()}; i < m_stackTop; ++i) {  // NOLINT
+        for (Value* i{m_stack.data()}; i < m_stackTop; ++i) {  // NOLINT
             std::cout << "[ ";
             printValue(*i);
             std::cout << " ]";
         }
         std::cout << '\n';
-        m_chunk->disassembleInstruction(
-                static_cast<std::size_t>(m_ip - m_chunk->getFirstCode()));
+        m_chunk->disassembleInstruction(m_ip);
 #endif
         OpCode instruction{};
 
         switch (instruction = read_byte()) {
             case OpCode::OP_CONSTANT:
-                *m_stackTop = read_constant();
-                ++m_stackTop;  // NOLINT
+                push(read_constant());
                 break;
             case OpCode::OP_CONSTANT_LONG:
-                *m_stackTop = read_long_constant();
-                ++m_stackTop;  // NOLINT
+                push(read_long_constant());
                 break;
             case OpCode::OP_NEGATE:
+                assert(m_stackTop > m_stack.data());
                 *(m_stackTop - 1) *= -1.0;  // NOLINT
                 break;
             case OpCode::OP_ADD:
@@ -46,7 +44,7 @@ auto VirtualMachine::run() -> InterpretResult {
                 binary_op<std::divides<Value>>();
                 break;
             case OpCode::OP_RETURN:
-                printValue(*(--m_stackTop));  // NOLINT
+                printValue(pop());
                 std::cout << '\n';
                 return InterpretResult::INTERPRET_OK;
             default:
@@ -57,9 +55,12 @@ auto VirtualMachine::run() -> InterpretResult {
     }
 }
 
-template<typename Oper>
+template <typename Oper>
 void VirtualMachine::binary_op() {
     Oper oper;
+
+    assert(m_stackTop >= &m_stack[2]);
+
     *(m_stackTop - 2) = oper(*(m_stackTop - 2), *(m_stackTop - 1));  // NOLINT
-    --m_stackTop;  // NOLINT
+    --m_stackTop;                                                    // NOLINT
 }

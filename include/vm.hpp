@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -29,7 +30,7 @@ class VirtualMachine {
     template <typename Oper>
     void binary_op();
 
-    auto read_byte() -> OpCode { return static_cast<OpCode>(*m_ip++); }  // NOLINT
+    auto read_byte() -> OpCode { return static_cast<OpCode>(m_chunk->getCode(m_ip++)); }
     auto read_constant() -> Value {
         return m_chunk->getConstant(static_cast<std::size_t>(read_byte()));
     }
@@ -43,8 +44,20 @@ class VirtualMachine {
         return m_chunk->getConstant(constantIndex);
     }
 
+    void push(Value value) {
+        assert(m_stackTop < m_stack.data() + MAX_STACK && "Stack Overflow.");  // NOLINT
+        *m_stackTop = value;
+        ++m_stackTop;  // NOLINT
+    }
+
+    auto pop() -> Value {
+        assert(m_stackTop > m_stack.data() && "Stack Underflow.");
+        --m_stackTop;  // NOLINT
+        return *m_stackTop;
+    }
+
     const Chunk* m_chunk;
-    const uint8_t* m_ip;
+    std::size_t m_ip;
     std::array<Value, MAX_STACK> m_stack;
     Value* m_stackTop;
 };
