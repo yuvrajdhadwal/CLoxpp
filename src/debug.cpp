@@ -38,7 +38,7 @@ static auto constantLongInstruction(const char* name, const Chunk& chunk, std::s
 void Chunk::disassembleChunk(const std::string_view name) const {
     std::cout << "== " << name << " ==\n";
 
-    for (std::size_t offset{0}; offset < code.size();) {
+    for (std::size_t offset{0}; offset < m_code.size();) {
         offset = disassembleInstruction(offset);
     }
 }
@@ -53,7 +53,7 @@ auto Chunk::disassembleInstruction(std::size_t offset) const -> std::size_t {
                static_cast<int>(getLine(offset)));
     }
 
-    OpCode instruction{code[offset]};
+    OpCode instruction{m_code[offset]};
 
     switch (instruction) {
         case OpCode::OP_CONSTANT:
@@ -80,8 +80,8 @@ auto Chunk::disassembleInstruction(std::size_t offset) const -> std::size_t {
 
 auto Chunk::getLine(std::size_t instrIndex) const -> std::size_t {
     auto iter = std::upper_bound(  // NOLINT
-        lines.begin(), lines.end(), instrIndex,
+        m_lines.begin(), m_lines.end(), instrIndex,
         [](std::size_t index, const LineEntry& entry) -> bool { return index < entry.endOffset; });
 
-    return (iter != lines.end()) ? static_cast<std::size_t>(iter->line) : 0;
+    return (iter != m_lines.end()) ? static_cast<std::size_t>(iter->line) : 0;
 }

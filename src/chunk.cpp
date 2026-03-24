@@ -7,13 +7,13 @@ void Chunk::writeChunk(OpCode opcode, int line)
 
 void Chunk::writeChunk(std::uint8_t byte, int line)  // NOLINT
 {
-    code.push_back(byte);
+    m_code.push_back(byte);
     
-    if (lines.empty() || lines.back().line != line)
+    if (m_lines.empty() || m_lines.back().line != line)
     {
-        lines.emplace_back(code.size(), line);
+        m_lines.emplace_back(m_code.size(), line);
     } else
     {
-        lines.back().endOffset = code.size();
+        m_lines.back().endOffset = m_code.size();
     }
 }

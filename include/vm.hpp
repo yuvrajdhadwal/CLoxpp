@@ -30,7 +30,10 @@ class VirtualMachine {
     template <typename Oper>
     void binary_op();
 
-    auto read_byte() -> OpCode { return static_cast<OpCode>(m_chunk->getCode(m_ip++)); }
+    auto read_byte() -> OpCode {
+        assert(m_ip < m_chunk->getCodeSize());
+        return static_cast<OpCode>(m_chunk->getCode(m_ip++));
+    }
     auto read_constant() -> Value {
         return m_chunk->getConstant(static_cast<std::size_t>(read_byte()));
     }

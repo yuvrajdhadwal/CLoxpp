@@ -2,19 +2,19 @@
 
 void Chunk::writeValue(Value value)
 {
-    constants.push_back(value);
+    m_constants.push_back(value);
 }
 
 auto Chunk::addConstant(Value value) -> std::uint8_t
 {
     writeValue(value);
-    return static_cast<std::uint8_t>(constants.size()) - 1;
+    return static_cast<std::uint8_t>(m_constants.size()) - 1;
 }
 
 void Chunk::writeConstant(Value value, int line)  // NOLINT
 {
     writeValue(value);
-    std::size_t index {constants.size() - 1ULL};
+    std::size_t index {m_constants.size() - 1ULL};
 
     const std::size_t byte1Mask {0xFF0000};
     const std::size_t byte1Shift {16};

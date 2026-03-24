@@ -41,15 +41,16 @@ class Chunk {
 
     // debug.cpp
     void disassembleChunk(std::string_view name) const;
-    auto disassembleInstruction(std::size_t offset) const -> std::size_t;
+    auto disassembleInstruction(std::size_t offset) const -> std::size_t;  // NOLINT
 
     // value.cpp
     auto addConstant(Value value) -> std::uint8_t;
 
     // inline
-    [[nodiscard]] auto getCode(std::size_t index) const -> uint8_t { return code[index]; }
-    [[nodiscard]] auto getConstant(std::size_t index) const -> Value { return constants[index]; }
-    [[nodiscard]] auto getFirstCode() const -> const uint8_t* { return code.data(); }
+    [[nodiscard]] auto getCode(std::size_t index) const -> uint8_t { return m_code[index]; }
+    [[nodiscard]] auto getConstant(std::size_t index) const -> Value { return m_constants[index]; }
+    [[nodiscard]] auto getFirstCode() const -> const uint8_t* { return m_code.data(); }
+    [[nodiscard]] auto getCodeSize() const -> std::size_t { return m_code.size(); }
 
    private:
     // debug.cpp
@@ -58,7 +59,7 @@ class Chunk {
     // value.cpp
     void writeValue(Value value);
 
-    std::vector<uint8_t> code;
-    std::vector<Value> constants;
-    std::vector<LineEntry> lines;
+    std::vector<uint8_t> m_code;
+    std::vector<Value> m_constants;
+    std::vector<LineEntry> m_lines;
 };
