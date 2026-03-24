@@ -1,6 +1,6 @@
 #include "vm.hpp"
 
-auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {
+auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {  // NOLINT
     compile(source);
 
     return InterpretResult::INTERPRET_OK;
@@ -10,7 +10,7 @@ auto VirtualMachine::run() -> InterpretResult {
     for (;;) {
 #ifdef DEBUG_TRACE_EXEC
         std::cout << "        ";
-        for (Value* i {m_stack.data()}; i < m_stackTop; ++i) {
+        for (Value* i {m_stack.data()}; i < m_stackTop; ++i) {  // NOLINT
             std::cout << "[ ";
             printValue(*i);
             std::cout << " ]";
@@ -24,14 +24,14 @@ auto VirtualMachine::run() -> InterpretResult {
         switch (instruction = read_byte()) {
             case OpCode::OP_CONSTANT:
                 *m_stackTop = read_constant();
-                ++m_stackTop;
+                ++m_stackTop;  // NOLINT
                 break;
             case OpCode::OP_CONSTANT_LONG:
                 *m_stackTop = read_long_constant();
-                ++m_stackTop;
+                ++m_stackTop;  // NOLINT
                 break;
             case OpCode::OP_NEGATE:
-                *(m_stackTop - 1) *= -1.0;
+                *(m_stackTop - 1) *= -1.0;  // NOLINT
                 break;
             case OpCode::OP_ADD:
                 binary_op<std::plus<Value>>();
@@ -46,7 +46,7 @@ auto VirtualMachine::run() -> InterpretResult {
                 binary_op<std::divides<Value>>();
                 break;
             case OpCode::OP_RETURN:
-                printValue(*(--m_stackTop));
+                printValue(*(--m_stackTop));  // NOLINT
                 std::cout << '\n';
                 return InterpretResult::INTERPRET_OK;
             default:
@@ -60,6 +60,6 @@ auto VirtualMachine::run() -> InterpretResult {
 template<typename Oper>
 void VirtualMachine::binary_op() {
     Oper oper;
-    *(m_stackTop - 2) = oper(*(m_stackTop - 2), *(m_stackTop - 1));
-    --m_stackTop;
+    *(m_stackTop - 2) = oper(*(m_stackTop - 2), *(m_stackTop - 1));  // NOLINT
+    --m_stackTop;  // NOLINT
 }

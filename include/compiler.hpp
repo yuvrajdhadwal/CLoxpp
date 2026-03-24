@@ -5,5 +5,6 @@
 
 #include "scanner.hpp"
 #include "token.hpp"
+#include "tokentype.hpp"
 
 void compile(std::string_view source);

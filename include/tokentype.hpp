@@ -1,4 +1,7 @@
+#pragma once
+
 #include <cstdint>
+#include <iostream>
 
 enum class TokenType : uint8_t {
     // Single-character tokens.
@@ -48,3 +51,4 @@ enum class TokenType : uint8_t {
     TOKEN_EOF
 };
 
+auto operator<<(std::ostream& out, const TokenType& token) -> std::ostream&;

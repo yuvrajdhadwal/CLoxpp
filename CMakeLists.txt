@@ -16,6 +16,7 @@ add_executable(CLoxpp.exe
     src/main.cpp
     src/scanner.cpp
     src/token.cpp
+    src/tokentype.cpp
     src/value.cpp
     src/vm.cpp
 )

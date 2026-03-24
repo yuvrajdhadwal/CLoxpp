@@ -7,16 +7,16 @@ void compile(std::string_view source) {
     for (;;) {
         Token token = scanner.scanToken();
         if (token.getLine() != line) {
-            std::cout << token.getLine();
+            std::cout << token.getLine() << '\n';
             line = token.getLine();
-        } else {
-            std::cout << "    | ";
         }
+        std::cout << "    | ";
+
         if (token.getMessage().empty()) {
-            std::cout << static_cast<int>(token.getType()) << " "
+            std::cout << token.getType() << " "
                       << scanner.getLex(token.getStart(), token.getLength()) << '\n';
         } else {
-            std::cout << static_cast<int>(token.getType()) << " " << token.getMessage() << '\n';
+            std::cout << token.getType() << " " << token.getMessage() << '\n';
         }
         if (token.getType() == TokenType::TOKEN_EOF) {
             break;
