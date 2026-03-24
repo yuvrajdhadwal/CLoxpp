@@ -9,7 +9,7 @@ void Compiler::advance(Scanner& scanner) {
             break;
         }
 
-        errorAtCurrent(m_current.getStart());
+        errorAtCurrent("Failure in Advance().");
     }
 }
 
@@ -22,13 +22,18 @@ void Compiler::consume(TokenType type, std::string_view message, Scanner& scanne
     errorAtCurrent(message);
 }
 
-Compiler::Compiler(std::string_view source, Chunk& chunk)
-    : m_source{source}, m_hadError{false}, m_panicMode{false} {
+void Compiler::startCompile() {
     Scanner scanner{m_source};
 
     advance(scanner);
     expression();
     consume(TokenType::TOKEN_EOF, "Expect End of Expression.", scanner);
+}
+
+Compiler::Compiler(std::string_view source, Chunk& chunk)
+    : m_chunk{chunk}, m_source{source}, m_hadError{false}, m_panicMode{false} {
+    startCompile();
+    finishCompile();
 }
 
 void Compiler::errorAt(Token& token, std::string_view message) {

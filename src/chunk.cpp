@@ -1,11 +1,11 @@
 #include "chunk.hpp"
 
-void Chunk::writeChunk(OpCode opcode, int line)
+void Chunk::writeChunk(OpCode opcode, std::size_t line)
 {
     writeChunk(static_cast<std::uint8_t>(opcode), line);
 }
 
-void Chunk::writeChunk(std::uint8_t byte, int line)  // NOLINT
+void Chunk::writeChunk(std::uint8_t byte, std::size_t line)  // NOLINT
 {
     m_code.push_back(byte);
     

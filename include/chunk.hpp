@@ -25,7 +25,7 @@ enum class OpCode : std::uint8_t {
 
 struct LineEntry {
     std::size_t endOffset;
-    int line;
+    std::size_t line;
 };
 
 void printValue(Value value);
@@ -35,9 +35,9 @@ class Chunk {
     Chunk() = default;
 
     // chunk.cpp
-    void writeChunk(OpCode opcode, int line);
-    void writeChunk(std::uint8_t byte, int line);
-    void writeConstant(Value value, int line);
+    void writeChunk(OpCode opcode, std::size_t line);
+    void writeChunk(std::uint8_t byte, std::size_t line);
+    void writeConstant(Value value, std::size_t line);
 
     // debug.cpp
     void disassembleChunk(std::string_view name) const;
