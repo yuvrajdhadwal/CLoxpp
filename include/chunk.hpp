@@ -9,17 +9,23 @@
 #include <vector>
 
 #include "common.hpp"
-
-using Value = double;
+#include "value.hpp"
 
 enum class OpCode : std::uint8_t {
     CONSTANT,
     CONSTANT_LONG,
     NEGATE,
+    NIL,
+    TRUE,
+    FALSE,
+    EQUAL,
+    GREATER,
+    LESS,
     ADD,
     SUBTRACT,
     MULTIPLY,
     DIVIDE,
+    NOT,
     RETURN
 };
 
@@ -27,8 +33,6 @@ struct LineEntry {
     std::size_t endOffset;
     std::size_t line;
 };
-
-void printValue(Value value);
 
 class Chunk {
    public:
@@ -42,6 +46,7 @@ class Chunk {
     // debug.cpp
     void disassembleChunk(std::string_view name) const;
     auto disassembleInstruction(std::size_t offset) const -> std::size_t;  // NOLINT
+    [[nodiscard]] auto getLine(std::size_t instrIndex) const -> std::size_t;
 
     // value.cpp
     auto addConstant(Value value) -> std::uint8_t;
@@ -53,9 +58,6 @@ class Chunk {
     [[nodiscard]] auto getCodeSize() const -> std::size_t { return m_code.size(); }
 
    private:
-    // debug.cpp
-    [[nodiscard]] auto getLine(std::size_t instrIndex) const -> std::size_t;
-
     // value.cpp
     void writeValue(Value value);
 

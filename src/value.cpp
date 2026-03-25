@@ -1,12 +1,8 @@
 #include "chunk.hpp"
 
-void Chunk::writeValue(Value value)
-{
-    m_constants.push_back(value);
-}
+void Chunk::writeValue(Value value) { m_constants.push_back(value); }
 
-auto Chunk::addConstant(Value value) -> std::uint8_t
-{
+auto Chunk::addConstant(Value value) -> std::uint8_t {
     writeValue(value);
     return static_cast<std::uint8_t>(m_constants.size()) - 1;
 }
@@ -14,19 +10,19 @@ auto Chunk::addConstant(Value value) -> std::uint8_t
 void Chunk::writeConstant(Value value, std::size_t line)  // NOLINT
 {
     writeValue(value);
-    std::size_t index {m_constants.size() - 1ULL};
+    std::size_t index{m_constants.size() - 1ULL};
 
-    const std::size_t byte1Mask {0xFF0000};
-    const std::size_t byte1Shift {16};
-    std::uint8_t byte1 {static_cast<uint8_t>((index & byte1Mask) >> byte1Shift)};
+    const std::size_t byte1Mask{0xFF0000};
+    const std::size_t byte1Shift{16};
+    std::uint8_t byte1{static_cast<uint8_t>((index & byte1Mask) >> byte1Shift)};
 
-    const std::size_t byte2Mask {0xFF00};
-    const std::size_t byte2Shift {8};
-    std::uint8_t byte2 {static_cast<uint8_t>((index & byte2Mask) >> byte2Shift)};
+    const std::size_t byte2Mask{0xFF00};
+    const std::size_t byte2Shift{8};
+    std::uint8_t byte2{static_cast<uint8_t>((index & byte2Mask) >> byte2Shift)};
 
-    const std::size_t byte3Mask {0xFF};
-    const std::size_t byte3Shift {0};
-    std::uint8_t byte3 {static_cast<uint8_t>((index & byte3Mask) >> byte3Shift)};
+    const std::size_t byte3Mask{0xFF};
+    const std::size_t byte3Shift{0};
+    std::uint8_t byte3{static_cast<uint8_t>((index & byte3Mask) >> byte3Shift)};
 
     writeChunk(OpCode::CONSTANT_LONG, line);
     writeChunk(byte1, line);
@@ -34,7 +30,14 @@ void Chunk::writeConstant(Value value, std::size_t line)  // NOLINT
     writeChunk(byte3, line);
 }
 
-void printValue(Value value)
-{
-    std::cout << value;
+template <class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+void printValue(const Value& value) {
+    std::visit(
+        overloaded{[](std::monostate) -> void { std::print("nil"); },
+                   [](bool boolean) -> void { std::print("{}", boolean ? "true" : "false"); },
+                   [](double doub) -> void { std::print("{:g}", doub); }},
+        value);
 }

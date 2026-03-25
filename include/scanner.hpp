@@ -24,7 +24,12 @@ class Scanner {
 
     auto advance() -> char { return m_file[m_current++]; }
     auto inline match(char expected) -> bool;
-    auto peek() -> char { return m_file[m_current]; }
+    auto peek() -> char {
+        if (isAtEnd()) {
+            return '\0';
+        }
+        return m_file[m_current];
+    }
     auto peekNext() -> char {
         if (isAtEnd()) {
             return '\0';

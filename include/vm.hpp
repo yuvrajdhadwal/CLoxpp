@@ -3,10 +3,13 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <format>
 #include <functional>
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <print>
+#include <string>
 #include <vector>
 
 #include "chunk.hpp"
@@ -27,6 +30,7 @@ class VirtualMachine {
 
    private:
     auto run() -> InterpretResult;
+    void resetStack() { m_stackTop = m_stack.data(); }
 
     template <typename Oper>
     void binary_op();
@@ -35,9 +39,18 @@ class VirtualMachine {
         assert(m_ip < m_chunk.getCodeSize());
         return static_cast<OpCode>(m_chunk.getCode(m_ip++));
     }
+
+    [[nodiscard]] auto static isFalsey(const Value& value) -> bool {
+        return std::holds_alternative<std::monostate>(value) ||
+               (std::holds_alternative<bool>(value) && !std::get<bool>(value));
+    }
+
+    auto static inline valuesEqual(const Value& first, const Value& second) -> bool;
+
     auto read_constant() -> Value {
         return m_chunk.getConstant(static_cast<std::size_t>(read_byte()));
     }
+
     auto read_long_constant() -> Value {
         const std::uint8_t constantIndex1{static_cast<std::uint8_t>(read_byte())};
         const std::uint8_t constantIndex2{static_cast<std::uint8_t>(read_byte())};
@@ -59,6 +72,13 @@ class VirtualMachine {
         --m_stackTop;  // NOLINT
         return *m_stackTop;
     }
+
+    auto peek(int distance) -> Value {
+        return m_stackTop[-1 - distance];  // NOLINT
+    }
+
+    template <typename... Args>
+    void runtimeError(std::string_view format, Args&&... args);
 
     Chunk m_chunk;
     std::size_t m_ip;

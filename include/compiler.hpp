@@ -56,6 +56,7 @@ class Compiler {
 
     void number();
     auto makeConstant(Value value) -> uint8_t;
+    void literal();
 
     void emitByte(uint8_t byte) { currentChunk().writeChunk(byte, m_previous.getLine()); }
     void emitByte(OpCode byte) { currentChunk().writeChunk(byte, m_previous.getLine()); }
@@ -112,21 +113,21 @@ class Compiler {
         // TOKEN_STAR
         {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::FACTOR},
         // TOKEN_BANG
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = &Compiler::unary, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_BANG_EQUAL
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::EQUALITY},
         // TOKEN_EQUAL
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_EQUAL_EQUAL
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::EQUALITY},
         // TOKEN_GREATER
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::COMPARISON},
         // TOKEN_GREATER_EQUAL
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::COMPARISON},
         // TOKEN_LESS
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::COMPARISON},
         // TOKEN_LESS_EQUAL
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::COMPARISON},
         // TOKEN_IDENTIFIER
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_STRING
@@ -140,7 +141,7 @@ class Compiler {
         // TOKEN_ELSE
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_FALSE
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = &Compiler::literal, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_FOR
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_FUN
@@ -148,7 +149,7 @@ class Compiler {
         // TOKEN_IF
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_NIL
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = &Compiler::literal, .infix = nullptr, .precedence = Precedence::NONE},
         //  TOKEN_OR
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_PRINT
@@ -160,7 +161,7 @@ class Compiler {
         // TOKEN_THIS
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_TRUE
-        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        {.prefix = &Compiler::literal, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_VAR
         {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_WHILE

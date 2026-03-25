@@ -1,9 +1,6 @@
 #include "compiler.hpp"
 
-auto Compiler::currentChunk() -> Chunk&
-{
-    return m_chunk;
-}
+auto Compiler::currentChunk() -> Chunk& { return m_chunk; }
 
 void Compiler::advance() {
     m_previous = m_current;
@@ -64,8 +61,24 @@ void Compiler::errorAt(Token& token, std::string_view message) {
 }
 
 void Compiler::number() {
-    double value{std::strtod(&m_source[m_previous.getStart()], nullptr)};
+    Value value{std::strtod(&m_source[m_previous.getStart()], nullptr)};
     emitConstant(value);
+}
+
+void Compiler::literal() {
+    switch (m_previous.getType()) {
+        case TokenType::FALSE:
+            emitByte(OpCode::FALSE);
+            break;
+        case TokenType::NIL:
+            emitByte(OpCode::NIL);
+            break;
+        case TokenType::TRUE:
+            emitByte(OpCode::TRUE);
+            break;
+        default:
+            return;
+    }
 }
 
 auto Compiler::makeConstant(Value value) -> uint8_t {
@@ -109,6 +122,24 @@ void Compiler::binary() {
     parsePrecedence(static_cast<Precedence>(static_cast<int>(rule.precedence) + 1));
 
     switch (operatorType) {
+        case TokenType::BANG_EQUAL:
+            emitBytes(OpCode::EQUAL, OpCode::NOT);
+            break;
+        case TokenType::EQUAL_EQUAL:
+            emitByte(OpCode::EQUAL);
+            break;
+        case TokenType::GREATER:
+            emitByte(OpCode::GREATER);
+            break;
+        case TokenType::GREATER_EQUAL:
+            emitBytes(OpCode::LESS, OpCode::NOT);
+            break;
+        case TokenType::LESS:
+            emitByte(OpCode::LESS);
+            break;
+        case TokenType::LESS_EQUAL:
+            emitBytes(OpCode::GREATER, OpCode::NOT);
+            break;
         case TokenType::PLUS:
             emitByte(OpCode::ADD);
             break;
@@ -132,6 +163,9 @@ void Compiler::unary() {
     parsePrecedence(Precedence::UNARY);
 
     switch (operatorType) {
+        case TokenType::BANG:
+            emitByte(OpCode::NOT);
+            break;
         case TokenType::MINUS:
             emitByte(OpCode::NEGATE);
             break;

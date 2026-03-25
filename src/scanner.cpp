@@ -218,8 +218,7 @@ auto Scanner::scanToken() -> Token {
         case '<':
             return makeToken(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
         case '>':
-            return makeToken(match('=') ? TokenType::GREATER_EQUAL
-                                        : TokenType::GREATER);
+            return makeToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
 
         case '"':
             return getString();
