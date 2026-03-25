@@ -5,169 +5,169 @@
 
 enum class TokenType : uint8_t {
     // Single-character tokens.
-    TOKEN_LEFT_PAREN,
-    TOKEN_RIGHT_PAREN,
-    TOKEN_LEFT_BRACE,
-    TOKEN_RIGHT_BRACE,
-    TOKEN_COMMA,
-    TOKEN_DOT,
-    TOKEN_MINUS,
-    TOKEN_PLUS,
-    TOKEN_SEMICOLON,
-    TOKEN_SLASH,
-    TOKEN_STAR,
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    LEFT_BRACE,
+    RIGHT_BRACE,
+    COMMA,
+    DOT,
+    MINUS,
+    PLUS,
+    SEMICOLON,
+    SLASH,
+    STAR,
     // One or two character tokens.
-    TOKEN_BANG,
-    TOKEN_BANG_EQUAL,
-    TOKEN_EQUAL,
-    TOKEN_EQUAL_EQUAL,
-    TOKEN_GREATER,
-    TOKEN_GREATER_EQUAL,
-    TOKEN_LESS,
-    TOKEN_LESS_EQUAL,
+    BANG,
+    BANG_EQUAL,
+    EQUAL,
+    EQUAL_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    LESS,
+    LESS_EQUAL,
     // Literals.
-    TOKEN_IDENTIFIER,
-    TOKEN_STRING,
-    TOKEN_NUMBER,
+    IDENTIFIER,
+    STRING,
+    NUMBER,
     // Keywords.
-    TOKEN_AND,
-    TOKEN_CLASS,
-    TOKEN_ELSE,
-    TOKEN_FALSE,
-    TOKEN_FOR,
-    TOKEN_FUN,
-    TOKEN_IF,
-    TOKEN_NIL,
-    TOKEN_OR,
-    TOKEN_PRINT,
-    TOKEN_RETURN,
-    TOKEN_SUPER,
-    TOKEN_THIS,
-    TOKEN_TRUE,
-    TOKEN_VAR,
-    TOKEN_WHILE,
+    AND,
+    CLASS,
+    ELSE,
+    FALSE,
+    FOR,
+    FUN,
+    IF,
+    NIL,
+    OR,
+    PRINT,
+    RETURN,
+    SUPER,
+    THIS,
+    TRUE,
+    VAR,
+    WHILE,
 
-    TOKEN_ERROR,
+    ERROR,
     TOKEN_EOF
 };
 
 auto inline operator<<(std::ostream& out, const TokenType& token) -> std::ostream& {
     switch (token) {
-        case TokenType::TOKEN_LEFT_PAREN:
+        case TokenType::LEFT_PAREN:
             out << "TOKEN_LEFT_PAREN";
             break;
-        case TokenType::TOKEN_RIGHT_PAREN:
+        case TokenType::RIGHT_PAREN:
             out << "TOKEN_RIGHT_PAREN";
             break;
-        case TokenType::TOKEN_LEFT_BRACE:
+        case TokenType::LEFT_BRACE:
             out << "TOKEN_LEFT_BRACE";
             break;
-        case TokenType::TOKEN_RIGHT_BRACE:
+        case TokenType::RIGHT_BRACE:
             out << "TOKEN_RIGHT_BRACE";
             break;
-        case TokenType::TOKEN_COMMA:
+        case TokenType::COMMA:
             out << "TOKEN_COMMA";
             break;
-        case TokenType::TOKEN_DOT:
+        case TokenType::DOT:
             out << "TOKEN_DOT";
             break;
-        case TokenType::TOKEN_MINUS:
+        case TokenType::MINUS:
             out << "TOKEN_MINUS";
             break;
-        case TokenType::TOKEN_PLUS:
+        case TokenType::PLUS:
             out << "TOKEN_PLUS";
             break;
-        case TokenType::TOKEN_SEMICOLON:
+        case TokenType::SEMICOLON:
             out << "TOKEN_SEMICOLON";
             break;
-        case TokenType::TOKEN_SLASH:
+        case TokenType::SLASH:
             out << "TOKEN_SLASH";
             break;
-        case TokenType::TOKEN_STAR:
+        case TokenType::STAR:
             out << "TOKEN_STAR";
             break;
-        case TokenType::TOKEN_BANG:
+        case TokenType::BANG:
             out << "TOKEN_BANG";
             break;
-        case TokenType::TOKEN_BANG_EQUAL:
+        case TokenType::BANG_EQUAL:
             out << "TOKEN_BANG_EQUAL";
             break;
-        case TokenType::TOKEN_EQUAL:
+        case TokenType::EQUAL:
             out << "TOKEN_EQUAL";
             break;
-        case TokenType::TOKEN_EQUAL_EQUAL:
+        case TokenType::EQUAL_EQUAL:
             out << "TOKEN_EQUAL_EQUAL";
             break;
-        case TokenType::TOKEN_GREATER:
+        case TokenType::GREATER:
             out << "TOKEN_GREATER";
             break;
-        case TokenType::TOKEN_GREATER_EQUAL:
+        case TokenType::GREATER_EQUAL:
             out << "TOKEN_GREATER_EQUAL";
             break;
-        case TokenType::TOKEN_LESS:
+        case TokenType::LESS:
             out << "TOKEN_LESS";
             break;
-        case TokenType::TOKEN_LESS_EQUAL:
+        case TokenType::LESS_EQUAL:
             out << "TOKEN_LESS_EQUAL";
             break;
-        case TokenType::TOKEN_IDENTIFIER:
+        case TokenType::IDENTIFIER:
             out << "TOKEN_IDENTIFIER";
             break;
-        case TokenType::TOKEN_STRING:
+        case TokenType::STRING:
             out << "TOKEN_STRING";
             break;
-        case TokenType::TOKEN_NUMBER:
+        case TokenType::NUMBER:
             out << "TOKEN_NUMBER";
             break;
-        case TokenType::TOKEN_AND:
+        case TokenType::AND:
             out << "TOKEN_AND";
             break;
-        case TokenType::TOKEN_CLASS:
+        case TokenType::CLASS:
             out << "TOKEN_CLASS";
             break;
-        case TokenType::TOKEN_ELSE:
+        case TokenType::ELSE:
             out << "TOKEN_ELSE";
             break;
-        case TokenType::TOKEN_FALSE:
+        case TokenType::FALSE:
             out << "TOKEN_FALSE";
             break;
-        case TokenType::TOKEN_FOR:
+        case TokenType::FOR:
             out << "TOKEN_FOR";
             break;
-        case TokenType::TOKEN_FUN:
+        case TokenType::FUN:
             out << "TOKEN_FUN";
             break;
-        case TokenType::TOKEN_IF:
+        case TokenType::IF:
             out << "TOKEN_IF";
             break;
-        case TokenType::TOKEN_NIL:
+        case TokenType::NIL:
             out << "TOKEN_NIL";
             break;
-        case TokenType::TOKEN_OR:
+        case TokenType::OR:
             out << "TOKEN_OR";
             break;
-        case TokenType::TOKEN_PRINT:
+        case TokenType::PRINT:
             out << "TOKEN_PRINT";
             break;
-        case TokenType::TOKEN_RETURN:
+        case TokenType::RETURN:
             out << "TOKEN_RETURN";
             break;
-        case TokenType::TOKEN_SUPER:
+        case TokenType::SUPER:
             out << "TOKEN_SUPER";
             break;
-        case TokenType::TOKEN_THIS:
+        case TokenType::THIS:
             out << "TOKEN_THIS";
             break;
-        case TokenType::TOKEN_TRUE:
+        case TokenType::TRUE:
             out << "TOKEN_TRUE";
             break;
-        case TokenType::TOKEN_VAR:
+        case TokenType::VAR:
             out << "TOKEN_VAR";
             break;
-        case TokenType::TOKEN_WHILE:
+        case TokenType::WHILE:
             out << "TOKEN_WHILE";
             break;
-        case TokenType::TOKEN_ERROR:
+        case TokenType::ERROR:
             out << "TOKEN_ERROR";
             break;
         case TokenType::TOKEN_EOF:

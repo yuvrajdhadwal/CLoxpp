@@ -13,14 +13,14 @@
 using Value = double;
 
 enum class OpCode : std::uint8_t {
-    OP_CONSTANT,
-    OP_CONSTANT_LONG,
-    OP_NEGATE,
-    OP_ADD,
-    OP_SUBTRACT,
-    OP_MULTIPLY,
-    OP_DIVIDE,
-    OP_RETURN
+    CONSTANT,
+    CONSTANT_LONG,
+    NEGATE,
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+    RETURN
 };
 
 struct LineEntry {

@@ -33,29 +33,29 @@ auto VirtualMachine::run() -> InterpretResult {
         OpCode instruction{};
 
         switch (instruction = read_byte()) {
-            case OpCode::OP_CONSTANT:
+            case OpCode::CONSTANT:
                 push(read_constant());
                 break;
-            case OpCode::OP_CONSTANT_LONG:
+            case OpCode::CONSTANT_LONG:
                 push(read_long_constant());
                 break;
-            case OpCode::OP_NEGATE:
+            case OpCode::NEGATE:
                 assert(m_stackTop > m_stack.data());
                 *(m_stackTop - 1) *= -1.0;  // NOLINT
                 break;
-            case OpCode::OP_ADD:
+            case OpCode::ADD:
                 binary_op<std::plus<Value>>();
                 break;
-            case OpCode::OP_SUBTRACT:
+            case OpCode::SUBTRACT:
                 binary_op<std::minus<Value>>();
                 break;
-            case OpCode::OP_MULTIPLY:
+            case OpCode::MULTIPLY:
                 binary_op<std::multiplies<Value>>();
                 break;
-            case OpCode::OP_DIVIDE:
+            case OpCode::DIVIDE:
                 binary_op<std::divides<Value>>();
                 break;
-            case OpCode::OP_RETURN:
+            case OpCode::RETURN:
                 printValue(pop());
                 std::cout << '\n';
                 return InterpretResult::INTERPRET_OK;

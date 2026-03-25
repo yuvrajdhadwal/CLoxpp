@@ -11,7 +11,7 @@ auto Chunk::addConstant(Value value) -> std::uint8_t
     return static_cast<std::uint8_t>(m_constants.size()) - 1;
 }
 
-void Chunk::writeConstant(Value value, int line)  // NOLINT
+void Chunk::writeConstant(Value value, std::size_t line)  // NOLINT
 {
     writeValue(value);
     std::size_t index {m_constants.size() - 1ULL};
@@ -28,7 +28,7 @@ void Chunk::writeConstant(Value value, int line)  // NOLINT
     const std::size_t byte3Shift {0};
     std::uint8_t byte3 {static_cast<uint8_t>((index & byte3Mask) >> byte3Shift)};
 
-    writeChunk(OpCode::OP_CONSTANT_LONG, line);
+    writeChunk(OpCode::CONSTANT_LONG, line);
     writeChunk(byte1, line);
     writeChunk(byte2, line);
     writeChunk(byte3, line);
