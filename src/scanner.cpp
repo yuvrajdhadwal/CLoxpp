@@ -171,7 +171,7 @@ auto Scanner::scanToken() -> Token {
     m_start = m_current;
 
     if (isAtEnd()) {
-        return makeToken(TokenType::EOF);
+        return makeToken(TokenType::TOKEN_EOF);
     }
 
     char curr_c{advance()};

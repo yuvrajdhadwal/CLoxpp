@@ -25,13 +25,19 @@ void Compiler::consume(TokenType type, std::string_view message) {
 void Compiler::startCompile() {
     advance();
     expression();
-    consume(TokenType::EOF, "Expect End of Expression.");
+    consume(TokenType::TOKEN_EOF, "Expect End of Expression.");
 }
 
 Compiler::Compiler(std::string_view source, Chunk& chunk)
     : m_chunk{chunk}, m_source{source}, m_hadError{false}, m_panicMode{false}, m_scanner{m_source} {
     startCompile();
     finishCompile();
+
+#ifdef DEBUG_PRINT_CODE
+    if (!m_hadError) {
+        m_chunk.disassembleChunk("code");
+    }
+#endif
 }
 
 void Compiler::errorAt(Token& token, std::string_view message) {
@@ -42,7 +48,7 @@ void Compiler::errorAt(Token& token, std::string_view message) {
     m_panicMode = true;
     std::cerr << "[line " << token.getLine() << "] Error";
 
-    if (token.getType() == TokenType::EOF) {
+    if (token.getType() == TokenType::TOKEN_EOF) {
         std::cerr << " at end";
     } else if (token.getType() != TokenType::ERROR) {
         std::cerr << " at " << m_source.substr(token.getStart(), token.getLength());
@@ -72,9 +78,48 @@ void Compiler::grouping() {
     consume(TokenType::RIGHT_PAREN, "Expect ')' after an expression.");
 }
 
-void Compiler::parsePrecedence(Precedence precedence) {}
+void Compiler::parsePrecedence(Precedence precedence) {
+    advance();
+    auto prefixRule = getRule(m_previous.getType()).prefix;
+
+    if (prefixRule == nullptr) {
+        error("Expect expression.");
+        return;
+    }
+
+    (this->*prefixRule)();
+
+    while (precedence <= getRule(m_current.getType()).precedence) {
+        advance();
+        auto infixRule = getRule(m_previous.getType()).infix;
+        (this->*infixRule)();
+    }
+}
 
 void Compiler::expression() { parsePrecedence(Precedence::ASSIGNMENT); }
+
+void Compiler::binary() {
+    TokenType operatorType{m_previous.getType()};
+    ParseRule& rule{getRule(operatorType)};
+    parsePrecedence(static_cast<Precedence>(static_cast<int>(rule.precedence) + 1));
+
+    switch (operatorType) {
+        case TokenType::PLUS:
+            emitByte(OpCode::ADD);
+            break;
+        case TokenType::MINUS:
+            emitByte(OpCode::SUBTRACT);
+            break;
+        case TokenType::STAR:
+            emitByte(OpCode::MULTIPLY);
+            break;
+        case TokenType::SLASH:
+            emitByte(OpCode::DIVIDE);
+            break;
+        default:
+            return;
+    }
+}
 
 void Compiler::unary() {
     TokenType operatorType{m_previous.getType()};

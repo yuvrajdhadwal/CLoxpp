@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 #include <string_view>
 
@@ -23,6 +24,14 @@ enum class Precedence : uint8_t {
     PRIMARY
 };
 
+class Compiler;
+
+struct ParseRule {
+    void (Compiler::*prefix)();
+    void (Compiler::*infix)();
+    Precedence precedence;
+};
+
 class Compiler {
    public:
     Compiler(std::string_view source, Chunk& chunk);
@@ -37,8 +46,10 @@ class Compiler {
     void expression();
     void grouping();
     void unary();
+    void binary();
 
     void parsePrecedence(Precedence precedence);
+    getRule(TokenType type) -> ParseRule& { return rules[static_cast<std::size_t>(type)]; }  // NOLINT
 
     void number();
     auto makeConstant(Value value) -> uint8_t;
@@ -71,4 +82,47 @@ class Compiler {
     bool m_hadError;
     bool m_panicMode;
     Scanner m_scanner;
+
+    std::array<ParseRule, 40> rules = {{
+        {&Compiler::grouping, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {&Compiler::unary, &Compiler::binary, Precedence::TERM},
+        {NULL, &Compiler::binary, Precedence::TERM},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, &Compiler::binary, Precedence::FACTOR},
+        {NULL, &Compiler::binary, Precedence::FACTOR},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {&Compiler::number, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+        {NULL, NULL, Precedence::NONE},
+    }};
 };
