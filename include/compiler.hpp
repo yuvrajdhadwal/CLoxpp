@@ -49,7 +49,9 @@ class Compiler {
     void binary();
 
     void parsePrecedence(Precedence precedence);
-    auto getRule(TokenType type) -> ParseRule& { return rules[static_cast<std::size_t>(type)]; }  // NOLINT
+    auto getRule(TokenType type) -> ParseRule& {
+        return rules[static_cast<std::size_t>(type)];  // NOLINT
+    }
 
     void number();
     auto makeConstant(Value value) -> uint8_t;
@@ -83,46 +85,88 @@ class Compiler {
     bool m_panicMode;
     Scanner m_scanner;
 
-    std::array<ParseRule, 40> rules = {{
-        {&Compiler::grouping, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {&Compiler::unary, &Compiler::binary, Precedence::TERM},
-        {NULL, &Compiler::binary, Precedence::TERM},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, &Compiler::binary, Precedence::FACTOR},
-        {NULL, &Compiler::binary, Precedence::FACTOR},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {&Compiler::number, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
-        {NULL, NULL, Precedence::NONE},
+    static constexpr std::size_t PARSE_RULE_COUNT{40};
+
+    std::array<ParseRule, PARSE_RULE_COUNT> rules = {{
+        // TOKEN_LEFT_PAREN
+        {.prefix = &Compiler::grouping, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_RIGHT_PAREN
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_LEFT_BRACE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_RIGHT_BRACE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        //  TOKEN_COMMA
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        //  TOKEN_DOT
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_MINUS
+        {.prefix = &Compiler::unary, .infix = &Compiler::binary, .precedence = Precedence::TERM},
+        //  TOKEN_PLUS
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::TERM},
+        // TOKEN_SEMICOLON
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_SLASH
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::FACTOR},
+        // TOKEN_STAR
+        {.prefix = nullptr, .infix = &Compiler::binary, .precedence = Precedence::FACTOR},
+        // TOKEN_BANG
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_BANG_EQUAL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_EQUAL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_EQUAL_EQUAL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_GREATER
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_GREATER_EQUAL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_LESS
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_LESS_EQUAL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_IDENTIFIER
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_STRING
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_NUMBER
+        {.prefix = &Compiler::number, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_AND
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_CLASS
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_ELSE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_FALSE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_FOR
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_FUN
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_IF
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_NIL
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        //  TOKEN_OR
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_PRINT
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_RETURN
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_SUPER
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_THIS
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_TRUE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_VAR
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_WHILE
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        //  TOKEN_ERROR
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
+        // TOKEN_EOF
+        {.prefix = nullptr, .infix = nullptr, .precedence = Precedence::NONE},
     }};
 };
