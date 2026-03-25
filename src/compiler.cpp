@@ -1,5 +1,10 @@
 #include "compiler.hpp"
 
+auto Compiler::currentChunk() -> Chunk&
+{
+    return m_chunk;
+}
+
 void Compiler::advance() {
     m_previous = m_current;
 
@@ -35,7 +40,7 @@ Compiler::Compiler(std::string_view source, Chunk& chunk)
 
 #ifdef DEBUG_PRINT_CODE
     if (!m_hadError) {
-        m_chunk.disassembleChunk("code");
+        currentChunk().disassembleChunk("code");
     }
 #endif
 }
@@ -64,7 +69,7 @@ void Compiler::number() {
 }
 
 auto Compiler::makeConstant(Value value) -> uint8_t {
-    int constant = m_chunk.addConstant(value);
+    int constant = currentChunk().addConstant(value);
     if (constant > UINT8_MAX) {
         error("Too many constants in one chunk.");
         return 0;

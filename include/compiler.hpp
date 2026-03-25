@@ -52,12 +52,13 @@ class Compiler {
     auto getRule(TokenType type) -> ParseRule& {
         return rules[static_cast<std::size_t>(type)];  // NOLINT
     }
+    auto currentChunk() -> Chunk&;
 
     void number();
     auto makeConstant(Value value) -> uint8_t;
 
-    void emitByte(uint8_t byte) { m_chunk.writeChunk(byte, m_previous.getLine()); }
-    void emitByte(OpCode byte) { m_chunk.writeChunk(byte, m_previous.getLine()); }
+    void emitByte(uint8_t byte) { currentChunk().writeChunk(byte, m_previous.getLine()); }
+    void emitByte(OpCode byte) { currentChunk().writeChunk(byte, m_previous.getLine()); }
     void emitReturn() { emitByte(OpCode::RETURN); }
     void emitBytes(uint8_t byteLeft, uint8_t byteRight) {
         emitByte(byteLeft);
