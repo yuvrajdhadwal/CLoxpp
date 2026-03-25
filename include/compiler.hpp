@@ -49,7 +49,7 @@ class Compiler {
     void binary();
 
     void parsePrecedence(Precedence precedence);
-    getRule(TokenType type) -> ParseRule& { return rules[static_cast<std::size_t>(type)]; }  // NOLINT
+    auto getRule(TokenType type) -> ParseRule& { return rules[static_cast<std::size_t>(type)]; }  // NOLINT
 
     void number();
     auto makeConstant(Value value) -> uint8_t;

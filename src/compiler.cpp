@@ -59,7 +59,7 @@ void Compiler::errorAt(Token& token, std::string_view message) {
 }
 
 void Compiler::number() {
-    double value{std::strtod(&m_source[m_current.getStart()], nullptr)};
+    double value{std::strtod(&m_source[m_previous.getStart()], nullptr)};
     emitConstant(value);
 }
 

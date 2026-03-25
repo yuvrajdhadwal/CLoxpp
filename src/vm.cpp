@@ -14,6 +14,7 @@ auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {  //
 
     m_chunk = std::move(chunk);
     m_ip = 0;
+    m_stackTop = m_stack.data();
 
     return run();
 }
