@@ -33,7 +33,7 @@ class VirtualMachine {
     void resetStack() { m_stackTop = m_stack.data(); }
 
     template <typename Oper>
-    void binary_op();
+    auto binary_op() -> InterpretResult;
 
     auto read_byte() -> OpCode {
         assert(m_ip < m_chunk.getCodeSize());

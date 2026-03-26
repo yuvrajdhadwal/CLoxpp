@@ -118,7 +118,7 @@ void Compiler::expression() { parsePrecedence(Precedence::ASSIGNMENT); }
 
 void Compiler::binary() {
     TokenType operatorType{m_previous.getType()};
-    ParseRule& rule{getRule(operatorType)};
+    const ParseRule& rule{getRule(operatorType)};
     parsePrecedence(static_cast<Precedence>(static_cast<int>(rule.precedence) + 1));
 
     switch (operatorType) {

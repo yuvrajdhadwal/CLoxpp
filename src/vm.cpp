@@ -18,7 +18,7 @@ auto VirtualMachine::interpret(std::string_view source) -> InterpretResult {  //
     return run();
 }
 
-auto VirtualMachine::run() -> InterpretResult {
+auto VirtualMachine::run() -> InterpretResult {  // NOLINT
     for (;;) {
 #ifdef DEBUG_TRACE_EXEC
         std::cout << "        ";
@@ -65,22 +65,34 @@ auto VirtualMachine::run() -> InterpretResult {
                 push(-std::get<double>(pop()));
                 break;
             case OpCode::GREATER:
-                binary_op<std::greater<double>>();
+                if (binary_op<std::greater<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                };
                 break;
             case OpCode::LESS:
-                binary_op<std::less<double>>();
+                if (binary_op<std::less<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             case OpCode::ADD:
-                binary_op<std::plus<double>>();
+                if (binary_op<std::plus<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             case OpCode::SUBTRACT:
-                binary_op<std::minus<double>>();
+                if (binary_op<std::minus<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             case OpCode::MULTIPLY:
-                binary_op<std::multiplies<double>>();
+                if (binary_op<std::multiplies<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             case OpCode::DIVIDE:
-                binary_op<std::divides<double>>();
+                if (binary_op<std::divides<double>>() != InterpretResult::INTERPRET_OK) {
+                    return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             case OpCode::NOT:
                 push(isFalsey(pop()));
@@ -91,27 +103,26 @@ auto VirtualMachine::run() -> InterpretResult {
                 return InterpretResult::INTERPRET_OK;
             default:
                 std::cout << "Cannot read this, error... continuing!\n";
-                break;
-                // return InterpretResult::INTERPRET_RUNTIME_ERROR;
+                return InterpretResult::INTERPRET_RUNTIME_ERROR;
         }
     }
 }
 
 template <typename Oper>
-void VirtualMachine::binary_op() {
+auto VirtualMachine::binary_op() -> InterpretResult {
     Oper oper;
 
     assert(m_stackTop >= &m_stack[2]);
     if (!std::holds_alternative<double>(peek(0)) || !std::holds_alternative<double>(peek(1))) {
         runtimeError("Operands must be numbers.");
-        return;
-        // return InterpretResult::INTERPRET_RUNTIME_ERROR;
+        return InterpretResult::INTERPRET_RUNTIME_ERROR;
     }
 
     double second_val = std::get<double>(pop());
     double first_val = std::get<double>(pop());
 
     push(oper(first_val, second_val));
+    return InterpretResult::INTERPRET_OK;
 }
 
 template <typename... Args>

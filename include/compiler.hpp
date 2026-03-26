@@ -49,7 +49,7 @@ class Compiler {
     void binary();
 
     void parsePrecedence(Precedence precedence);
-    auto getRule(TokenType type) -> ParseRule& {
+    static auto getRule(TokenType type) -> const ParseRule& {
         return rules[static_cast<std::size_t>(type)];  // NOLINT
     }
     auto currentChunk() -> Chunk&;
@@ -89,7 +89,7 @@ class Compiler {
 
     static constexpr std::size_t PARSE_RULE_COUNT{40};
 
-    std::array<ParseRule, PARSE_RULE_COUNT> rules = {{
+    static constexpr std::array<ParseRule, PARSE_RULE_COUNT> rules = {{
         // TOKEN_LEFT_PAREN
         {.prefix = &Compiler::grouping, .infix = nullptr, .precedence = Precedence::NONE},
         // TOKEN_RIGHT_PAREN
